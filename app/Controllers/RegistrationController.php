@@ -1,5 +1,6 @@
 <?php
 namespace App\Controllers;
+use App\Models\MongoModel;
 use App\Models\MysqlModel;
 
 class RegistrationController extends BaseController{
@@ -20,8 +21,14 @@ class RegistrationController extends BaseController{
             $password = $_POST['password'];
             $contact = $_POST['contact'];
             $pol = $_POST['pol'];
-            $model = new MysqlModel();
-            $model->register($username, $ime, $prezime, $email, $password, $contact, $pol);
+            if($_SESSION['database']=='mysql'){
+                $model = new MysqlModel();
+                $model->register($username, $ime, $prezime, $email, $password, $contact, $pol);
+            }
+            if($_SESSION['database']=='mongodb'){
+                $model=new MongoModel();
+                $model->register($username,$ime,$prezime,$email,$password,$contact,$pol);
+            }
             return redirect()->to('/login-form');
         }
         echo 'Vrednost: ' . $session->get('database') . '<br>';

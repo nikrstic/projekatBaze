@@ -1,5 +1,6 @@
 <?php
 namespace App\Controllers;
+use App\Models\MongoModel;
 use App\Models\MysqlModel;
 
 class LoginController extends BaseController{
@@ -40,7 +41,9 @@ public function login()
             
         } else {
             return view('login', ['error' => 'Podaci nisu ispravni']);
-        
+        if($_SESSION['database']=='mongodb'){
+            $model = new MongoModel();
+        }
     }
 }
     return redirect()->to('/login-form');
