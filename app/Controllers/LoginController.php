@@ -23,31 +23,38 @@ public function login()
         $password = $this->request->getPost('password');
         
         if($_SESSION['database']=='mysql'){
-        $model = new MysqlModel();
-        if ($model->login($username, $password)) {
-            log_message('debug', $_SESSION['role_id']);
-            if($_SESSION['role_id']==1){
-                log_message('debug', "admin");
-                return redirect()->to('/admin');
+            $model = new MysqlModel();
+            if ($model->login($username, $password)) {
+                log_message('debug', $_SESSION['role_id']);
+                if($_SESSION['role_id']==1){
+                    log_message('debug', "admin");
+                    return redirect()->to('/admin');
+                }
+                else if($_SESSION['role_id']==2){
+                    log_message('debug', "narudzbine");
+                    return redirect()->to('/konobar');
+                }
+                else {
+                    log_message('debug', "gost");
+                    return redirect()->to('/stolovi');
+                }
+                
+            } else {
+                return view('login', ['error' => 'Podaci nisu ispravni']);
             }
-            else if($_SESSION['role_id']==2){
-                log_message('debug', "narudzbine");
-                return redirect()->to('/konobar');
-            }
-            else {
-                log_message('debug', "gost");
-                return redirect()->to('/stolovi');
-            }
-            
-        } else {
-            return view('login', ['error' => 'Podaci nisu ispravni']);
-        if($_SESSION['database']=='mongodb'){
-            $model = new MongoModel();
         }
+            log_message('debug', 'tu smo'); 
+            log_message('debug',print_r($_SESSION['database']));
+        if($_SESSION['database']=='mongodb'){
+            
+            $model = new MongoModel();
+           
+            $login = $model->login($username, $password);
+            log_message('debug', print_r(session()->get(), true));
+            //log_message('debug', $_SESSION['username']);
+        }
+        return redirect()->to('/login-form');
     }
+    
 }
-    return redirect()->to('/login-form');
-}
-
-
-}
+    
