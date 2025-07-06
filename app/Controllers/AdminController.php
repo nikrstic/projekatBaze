@@ -1,5 +1,6 @@
 <?php
 namespace App\Controllers;
+use App\Models\MongoModel;
 use App\Models\MysqlModel;
 use CodeIgniter\Files\File;
 
@@ -14,14 +15,25 @@ class AdminController extends BaseController
     }
    public function adminPage()
 {
-    $model = new MysqlModel();
     $session = session();
-
-    if ($session->get('role_id') != 1) {
+    if($_SESSION['database']=='mysql'){
+        $model = new MysqlModel();
+         
+    }
+    
+    if($_SESSION['database']=='mongodb'){
+        $model= new MongoModel();
+    }
+    if ($session->get('role_id') != 1 && $session->get('role')!= 'admin') {
+        log_message('debug','usli ovde'.$session->get('role'));
         return redirect()->to('login-form');
     }
+   
 
     $korisnici = $model->getAllUsers();
+    log_message('debug',"aaaaaaaaaaaa");
+    log_message('debug',print_r($korisnici));
+    log_message('debug',"aaaaaaaaaaaa");
     $kategorije = $model->getAllCategories();
     $narudzbine = $model->getAllOrders();
     $poruke = $model->getAllMessages();

@@ -73,7 +73,147 @@ public function login($username, $password){
     }   
 }
 
+public function getAllUsers()
+{
+    $cursor = $this->korisnici->find([], [
+        'projection' => [
+            '_id' => 0,
+            'username' => 1,
+            'ime' => 1,
+            'prezime' => 1,
+            'email' => 1,
+            'contact' => 1,
+            'pol' => 1,
+            'role' => 1
+        ]
+    ]);
+    log_message('debug',print_r($cursor));
+    
+    return iterator_to_array($cursor);
+}
+public function getAllCategories()
+{
+    $cursor = $this->client->bazaprojekat->kategorije->find([], [
+        'projection' => ['_id' => 0]
+    ]);
 
+    return iterator_to_array($cursor);
+}
+public function getAllOrders()
+{
+    $narudzbine = $this->client->bazaprojekat->narudzbine->aggregate([
+        [
+            '$lookup' => [
+                'from' => 'korisnici',
+                'localField' => 'korisnik_id',
+                'foreignField' => '_id',
+                'as' => 'korisnik'
+            ]
+        ],
+        [
+            '$lookup' => [
+                'from' => 'stolovi',
+                'localField' => 'sto_id',
+                'foreignField' => '_id',
+                'as' => 'sto'
+            ]
+        ],
+        ['$unwind' => '$korisnik'],
+        ['$unwind' => '$sto'],
+        ['$sort' => ['vreme' => -1]],
+        ['$project' => [
+            '_id' => 0,
+            'id' => ['$toString' => '$_id'],
+            'vreme' => 1,
+            'status' => 1,
+            'username' => '$korisnik.username',
+            'sto' => '$sto.oznaka'
+        ]]
+    ]);
 
+    return iterator_to_array($narudzbine);
+}
+public function getAllMessages()
+{
+    $poruke = $this->client->bazaprojekat->poruke->aggregate([
+        [
+            '$lookup' => [
+                'from' => 'korisnici',
+                'localField' => 'korisnik_id',
+                'foreignField' => '_id',
+                'as' => 'korisnik'
+            ]
+        ],
+        [
+            '$lookup' => [
+                'from' => 'narudzbine',
+                'localField' => 'narudzbina_id',
+                'foreignField' => '_id',
+                'as' => 'narudzbina'
+            ]
+        ],
+        ['$unwind' => '$korisnik'],
+        ['$unwind' => '$narudzbina'],
+        ['$sort' => ['vreme' => -1]],
+        ['$project' => [
+            '_id' => 0,
+            'id' => ['$toString' => '$_id'],
+            'tekst' => 1,
+            'vreme' => 1,
+            'procitano' => 1,
+            'username' => '$korisnik.username',
+            'narudzbina_id' => ['$toString' => '$narudzbina._id']
+        ]]
+    ]);
+
+    return iterator_to_array($poruke);
+}
+public function getStats()
+{
+    $statistika = $this->client->bazaprojekat->ukupna_potrosnja->aggregate([
+        [
+            '$lookup' => [
+                'from' => 'korisnici',
+                'localField' => 'korisnik_id',
+                'foreignField' => '_id',
+                'as' => 'korisnik'
+            ]
+        ],
+        ['$unwind' => '$korisnik'],
+        ['$sort' => ['iznos' => -1]],
+        ['$limit' => 5],
+        ['$project' => [
+            '_id' => 0,
+            'username' => '$korisnik.username',
+            'iznos' => 1
+        ]]
+    ]);
+
+    return iterator_to_array($statistika);
+}
+public function getLogs()
+{
+    $logovi = $this->client->bazaprojekat->logovi->aggregate([
+        [
+            '$lookup' => [
+                'from' => 'korisnici',
+                'localField' => 'korisnik_id',
+                'foreignField' => '_id',
+                'as' => 'korisnik'
+            ]
+        ],
+        ['$unwind' => '$korisnik'],
+        ['$sort' => ['vreme' => -1]],
+        ['$project' => [
+            '_id' => 0,
+            'id' => ['$toString' => '$_id'],
+            'radnja' => 1,
+            'vreme' => 1,
+            'username' => '$korisnik.username'
+        ]]
+    ]);
+
+    return iterator_to_array($logovi);
+}
     
 }

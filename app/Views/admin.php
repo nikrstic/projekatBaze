@@ -41,11 +41,18 @@
         <p><?= esc($korisnik['ime']) ?> <?= esc($korisnik['prezime']) ?> – <?= esc($korisnik['email']) ?></p>
 
         <input type="hidden" name="username" value="<?= esc($korisnik['username']) ?>">
-
+        <?php $trenutniRole = isset($korisnik['role_id']) ? $korisnik['role_id'] : $korisnik['role'];
+                if($trenutniRole=='admin' || $trenutniRole==1)
+                    $num=1;
+                else if($trenutniRole=='konobar' || $trenutniRole==2)
+                    $num=2;
+                else
+                    $num=3;
+        ?>
         <select name="role_id" onchange="this.form.submit()">
-            <option value="1" <?= $korisnik['role_id'] == 1 ? 'selected' : '' ?>>Admin</option>
-            <option value="2" <?= $korisnik['role_id'] == 2 ? 'selected' : '' ?>>Konobar</option>
-            <option value="3" <?= $korisnik['role_id'] == 3 ? 'selected' : '' ?>>Gost</option>
+            <option value="2" <?= $num == 2 ? 'selected' : '' ?>>Konobar</option>
+            <option value="1" <?= $num == 1 ? 'selected' : '' ?>>Admin</option>
+            <option value="3" <?= $num == 3 ? 'selected' : '' ?>>Gost</option>
         </select>
     </form>
 <?php endforeach; ?>
