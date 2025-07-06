@@ -55,9 +55,9 @@ public function login($username, $password){
     ['username' => $username],
     ['projection' => ['_id' => 0, 'password' => 1]]
 );
-log_message('debug', json_encode($password1['password']));
-log_message('debug', $password);
-    if ($password1['password']==$password)
+//log_message('debug', json_encode($password1['password']));
+//log_message('debug', $password);
+    if ($password1 && $password1['password']==$password)
     {
         log_message('debug', "tu smo");   
          session()->set([
@@ -73,19 +73,7 @@ log_message('debug', $password);
     }   
 }
 
-public function setup()
-    {
-        $count = $this->collection->countDocuments();
-        if ($count === 0) {
-            $this->collection->insertMany([
-                ['ime' => 'Mila', 'prezime' => 'Milic'],
-                ['ime' => 'Nemanja', 'prezime' => 'Nemanic']
-            ]);
-        }
-    }
 
-    public function getAll()
-    {
-        return $this->collection->find()->toArray();
-    }
+
+    
 }

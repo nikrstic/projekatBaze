@@ -48,8 +48,23 @@ public function login()
             $model = new MongoModel();
            
             $login = $model->login($username, $password);
-            log_message('debug', print_r(session()->get(), true));
+            //log_message('debug', print_r(session()->get(), true));
             //log_message('debug', $_SESSION['username']);
+            if($login){
+                if($_SESSION['role']=='korisnik'){
+                    return redirect()->to('/stolovi');
+                }
+                else if($_SESSION['role']=='admin'){
+                    return redirect()->to('/admin');
+                }
+                else if($_SESSION['role']=='konobar')
+                {
+                    return redirect()->to('/konobar');
+                }
+            } else {
+                return view('login', ['error' => 'Podaci nisu ispravni']);
+            }
+
         }
         return redirect()->to('/login-form');
     }

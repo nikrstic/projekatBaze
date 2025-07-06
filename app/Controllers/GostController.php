@@ -1,14 +1,19 @@
 <?php
 namespace App\Controllers;
 
+use App\Models\MongoModel;
 use App\Models\MysqlModel;
 use Kint\Parser\MysqliPlugin;
 
 class GostController extends BaseController{
     public function index(){
-        $model = new MysqlModel();
+        if($_SESSION['database']=='mysql'){
+            $model = new MysqlModel();
+        }
+        else if($_SESSION['database']=='mongodb'){
+            $model = new MongoModel();
+        }
         $kategorije= $model->getCategories();
-       
         return view("gost", [
             'kategorije' => $kategorije,
             
