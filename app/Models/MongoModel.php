@@ -55,10 +55,12 @@ public function login($username, $password){
     ['username' => $username],
     ['projection' => ['_id' => 0, 'password' => 1]]
 );
-    if ($password1==$password)
+log_message('debug', json_encode($password1['password']));
+log_message('debug', $password);
+    if ($password1['password']==$password)
     {
+        log_message('debug', "tu smo");   
          session()->set([
-                'user_id' => $korisnik['id'],
                 'username' => $korisnik['username'],
                 'ime' => $korisnik['ime'],
                 'role' => $korisnik['role'],

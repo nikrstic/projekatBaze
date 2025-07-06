@@ -43,8 +43,6 @@ public function login()
                 return view('login', ['error' => 'Podaci nisu ispravni']);
             }
         }
-            log_message('debug', 'tu smo'); 
-            log_message('debug',print_r($_SESSION['database']));
         if($_SESSION['database']=='mongodb'){
             
             $model = new MongoModel();
