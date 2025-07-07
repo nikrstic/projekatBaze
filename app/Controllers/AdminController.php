@@ -34,7 +34,7 @@ class AdminController extends BaseController
     // log_message('debug',"aaaaaaaaaaaa");
     // log_message('debug',print_r($korisnici));
     // log_message('debug',"aaaaaaaaaaaa");
-    $kategorije = $this->model->getAllCategories();
+    $kategorije = $this->model->getCategories();
     $narudzbine = $this->model->getAllOrders();
     $poruke = $this->model->getAllMessages();
     $statistika = $this->model->getStats();

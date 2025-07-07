@@ -92,7 +92,7 @@ public function getAllUsers()
     
     return iterator_to_array($cursor);
 }
-public function getAllCategories()
+public function getCategories()
 {
     log_message('debug', 're');
     $cursor = $this->client->bazaprojekat->kategorija->find([], []);
@@ -236,5 +236,5 @@ public function getLogs()
     public function getTables(){
         return  $this->client->bazaprojekat->stolovi->find();
     }
-
+   
 }

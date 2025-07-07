@@ -186,12 +186,12 @@ class MysqlModel extends Model
         $sql = "INSERT INTO kategorije (`naziv`, `opis`) VALUES (?,?)";
         return $this->db()->query($sql,[$ime, $opis]);
     }
-    public function getAllCategories()
-    {
-        $db=$this->db();
-        $sql  = "SELECT kategorije.id, kategorije.naziv, kategorije.opis FROM kategorije";
-        return $this->db()->query($sql)->getResultArray();
-    }
+    // public function getAllCategories()
+    // {
+    //     $db=$this->db();
+    //     $sql  = "SELECT kategorije.id, kategorije.naziv, kategorije.opis FROM kategorije";
+    //     return $this->db()->query($sql)->getResultArray();
+    // }
     public function addProduct($naziv, $cena, $opis, $kategorija_id,$dostupno,$img)  {
         $sql = "INSERT INTO proizvodi (`naziv`, `cena`, `opis`, `kategorija_id`,`dostupno`,`slika`) VALUES (?,?,?,?,?,?);";
         return $this->db()->query($sql,[$naziv, $cena, $opis, $kategorija_id,$dostupno,$img]); 

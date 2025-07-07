@@ -28,7 +28,7 @@ class GostController extends BaseController{
     }
         public function prikaziProizvode($kategorija_id){
 
-        $kategorije = $this->model->getAllCategories();
+        $kategorije = $this->model->getCategories();
         $proizvodi = $this->model->getProductsByCategory($kategorija_id);
         $kategorija = $this->model->getCategory($kategorija_id);
         $korpa = $this->model->getCart(session()->get('user_id'));
