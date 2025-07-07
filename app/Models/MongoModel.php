@@ -6,7 +6,7 @@ use MongoDB\BSON\ObjectId;
 
 
 use CodeIgniter\I18n\Time;
-use PhpParser\Node\Expr\Cast\Object_;
+
 class MongoModel
 {
     protected $client;
@@ -258,4 +258,30 @@ public function getCart($user_id)
     // {
     //     return $this->client->bazaprojekat->kategorija->findOne(['_id' => new ObjectId($kategorija_id)]);
     // }
+
+
+public function addToCart($user_id, $proizvod_id)
+{
+    $collection = $this->client->bazaprojekat->korpa;
+
+    $postoji = $collection->findOne([
+        'korisnik_id' => new ObjectId($user_id),
+        'proizvod_id' => new ObjectId($proizvod_id)
+    ]);
+
+    if ($postoji) {
+        $collection->updateOne(
+            ['_id' => $postoji['_id']],
+            ['$inc' => ['kolicina' => 1]]
+        );
+    } else {
+        $collection->insertOne([
+            'korisnik_id' => new ObjectId($user_id),
+            'proizvod_id' => new ObjectId($proizvod_id),
+            'kolicina' => 1,
+            'dodato' => new \MongoDB\BSON\UTCDateTime()
+        ]);
+    }
+}
+
 }
