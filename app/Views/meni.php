@@ -11,7 +11,10 @@
         <ul>
             <?php foreach ($kategorije as $kat): ?>
                 <li>
-                    <a href="/meni/kategorija/<?= esc($kat['id']) ?>">
+                    <?=
+                     $id = isset($kat['id']) ? $kat['id'] : (string)$kat['_id'];
+                    ?>
+                     <a href="/meni/kategorija/<?= esc($id) ?>">
                         <?= esc($kat['naziv']) ?>
                     </a>
                 </li>
@@ -30,7 +33,10 @@
                        <img src="/uploads/<?= esc($p['slika']) ?>" style="max-width: 200px; height: auto;">
                         <form method="post" action="/korpa/dodaj">
                             <?= csrf_field() ?>
-                            <input type="hidden" name="proizvod_id" value="<?= esc($p['id']) ?>">
+                            <?=
+                     $id = isset($p['id']) ? $p['id'] : (string)$p['_id'];
+                    ?>
+                            <input type="hidden" name="proizvod_id" value="<?= esc($id) ?>">
                             <button type="submit">Dodaj u korpu</button>
                         </form>
                     </li>

@@ -12,7 +12,10 @@
     </div>
 <?php endif; ?>
     <?php foreach($kategorije as $kategorija): ?>
-       <a href="/meni/kategorija/<?= esc($kategorija['id']) ?>">
+        <?=
+        $id = isset($kategorija['id']) ? $kategorija['id'] : (string)$kategorija['_id'];
+        ?>
+       <a href="/meni/kategorija/<?= esc($id) ?>">
         <?= esc($kategorija['naziv']) ?>
     </a><br>
 

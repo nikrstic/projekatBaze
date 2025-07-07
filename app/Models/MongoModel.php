@@ -236,5 +236,26 @@ public function getLogs()
     public function getTables(){
         return  $this->client->bazaprojekat->stolovi->find();
     }
-   
+    public function getCategory($kategorija_id)
+{
+    // if (!ObjectId::isValid($kategorija_id)) {
+    //     log_message('error', 'Nevalidan kategorija ID: ' . $kategorija_id);
+    //     return null;
+    // }
+
+    return $this->client->bazaprojekat->kategorija->findOne([
+        '_id' => new ObjectId($kategorija_id)
+    ]);
+}
+public function getProductsByCategory($kategorija_id){
+    return $this->client->bazaprojekat->proizvodi->find(['kategorija_id'=>new ObjectID($kategorija_id)]);
+}
+public function getCart($user_id)
+{
+    return $this->client->bazaprojekat->korpa->find(['korisnik_id'=>$user_id]);
+}
+    // public function getCategory($kategorija_id)
+    // {
+    //     return $this->client->bazaprojekat->kategorija->findOne(['_id' => new ObjectId($kategorija_id)]);
+    // }
 }

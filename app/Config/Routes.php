@@ -24,7 +24,7 @@ $routes->post('/admin/add-table', "AdminController::addTable");
 $routes->get('/gost', "GostController::index");
 $routes->get('/meni/kategorija/', 'GostController::index');
 
-$routes->get('/meni/kategorija/(:num)', 'GostController::PrikaziProizvode/$1');
+$routes->get('/meni/kategorija/(:any)', 'GostController::PrikaziProizvode/$1');
 $routes->post('/korpa/dodaj', 'CartController::dodaj');
 $routes->post('/korpa/azuriraj', 'CartController::azuriraj');
 $routes->post('/korpa/obrisi', 'CartController::obrisi');
