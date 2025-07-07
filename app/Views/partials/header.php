@@ -16,13 +16,13 @@
 
             <?php if ($session->has('isLoggedIn')): ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="/logout-user">Logout (Korisnik)</a>
+                    <a class="nav-link" href="/logout-user">Logout (<?= $session->get('username')?>)</a>
                 </li>
             <?php endif; ?>
 
             <?php if ($session->has('database')): ?>
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="/logout-all">Logout (Baza)</a>
+                    <a class="nav-link text-danger" href="/logout-all">Logout (<?= $session->get('database')?>)</a>
                 </li>
             <?php endif; ?>
         </ul>

@@ -228,5 +228,13 @@ public function getLogs()
     public function addProduct($naziv, $cena, $opis, $kategorija_id, $dostupno, $imeSlike){
         $this->client->bazaprojekat->proizvodi->insertOne(['naziv'=>$naziv, 'cena'=>(float)$cena, 'opis'=>$opis, 'kategorija_id'=>new ObjectId($kategorija_id), 'dostupno'=> $dostupno, 'slika'=>$imeSlike]);
     }
+    public function addTable($oznaka, $aktivan){
+        $this->client->bazaprojekat->stolovi->insertOne(['oznaka'=>$oznaka, 'aktivan'=>$aktivan]);
+    }
+
+    // gost
+    public function getTables(){
+        return  $this->client->bazaprojekat->stolovi->find();
+    }
 
 }

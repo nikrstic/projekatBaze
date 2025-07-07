@@ -6,26 +6,32 @@ use App\Models\MysqlModel;
 use Kint\Parser\MysqliPlugin;
 
 class GostController extends BaseController{
+    protected $session;
+    protected $model;
+   public function __construct()
+{
+    $this->session = session();
+    
+    if ($this->session->get('database') === 'mysql') {
+        $this->model = new MysqlModel();
+    } elseif ($this->session->get('database') === 'mongodb') {
+        $this->model = new MongoModel();
+    }
+}
     public function index(){
-        if($_SESSION['database']=='mysql'){
-            $model = new MysqlModel();
-        }
-        else if($_SESSION['database']=='mongodb'){
-            $model = new MongoModel();
-        }
-        $kategorije= $model->getCategories();
+       
+        $kategorije= $this->model->getCategories();
         return view("gost", [
             'kategorije' => $kategorije,
             
         ]);
     }
         public function prikaziProizvode($kategorija_id){
-        $model = new MysqlModel();
 
-        $kategorije = $model->getAllCategories();
-        $proizvodi = $model->getProductsByCategory($kategorija_id);
-        $kategorija = $model->getCategory($kategorija_id);
-        $korpa = $model->getCart(session()->get('user_id'));
+        $kategorije = $this->model->getAllCategories();
+        $proizvodi = $this->model->getProductsByCategory($kategorija_id);
+        $kategorija = $this->model->getCategory($kategorija_id);
+        $korpa = $this->model->getCart(session()->get('user_id'));
         $path = WRITEPATH . 'uploads/';
         return view('meni', [
             'proizvodi' => $proizvodi,
@@ -38,8 +44,7 @@ class GostController extends BaseController{
     }
     public function prikaziStolove()
     {
-        $model = new MysqlModel();
-        $stolovi = $model->getTables();
+        $stolovi = $this->model->getTables();
         return view('tables', ['stolovi'=>$stolovi]);        
     }
 
@@ -74,8 +79,8 @@ class GostController extends BaseController{
     $korisnik_id = session()->get('user_id');
     $sto_id = session()->get('sto');
 
-    $model = new MysqlModel();
-    $model->pozoviProceduruNarudzbine($korisnik_id, $sto_id);
+    
+    $this->model->pozoviProceduruNarudzbine($korisnik_id, $sto_id);
 
     return redirect()->to('/meni/kategorija')->with('success', 'Narudžbina uspešno napravljena preko procedure!');
 }

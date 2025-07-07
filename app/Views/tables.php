@@ -12,7 +12,10 @@
     <?= csrf_field() ?>
     <select name="sto_id" required>
     <?php foreach ($stolovi as $sto): ?>
-        <option value="<?= esc($sto['id']) ?>" <?= $sto['aktivan'] ? '' : 'disabled' ?>>
+        <?=
+        $id = isset($sto['id']) ? $sto['id'] : (string)$sto['_id'];
+        ?>
+        <option value="<?= esc($id) ?>" <?= $sto['aktivan'] ? '' : 'disabled' ?>>
             <?= esc($sto['oznaka']) ?> <?= $sto['aktivan'] ? '' : '(nedostupan)' ?>
         </option>
         

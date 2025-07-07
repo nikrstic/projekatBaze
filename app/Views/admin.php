@@ -91,7 +91,7 @@
                  <?php foreach ($kategorije as $kategorija): ?>
                   <?= 
                   
-                    print_r($kategorija);
+                   
                     $id = isset($kategorija['id']) ? $kategorija['id'] : (string)$kategorija['_id'];
                     
                    ?>
