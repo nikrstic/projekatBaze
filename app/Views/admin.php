@@ -30,7 +30,7 @@
             <h2>📊 Dashboard</h2>
             <p>Pregled sistema, aktivni korisnici, nove porudžbine, zauzeti stolovi itd.</p>
         </section>
-        <form action="/change-role" method="post" >
+        <form action="/admin/change-role" method="post" >
         <?= csrf_field() ?>
         <section id="korisnici">
             <h2>👥 Korisnici</h2>
@@ -89,7 +89,13 @@
                 <label>Kategorija:</label>
                 <select name="kategorija_id">
                  <?php foreach ($kategorije as $kategorija): ?>
-                    <option value="<?= esc($kategorija['id']) ?>"><?= esc($kategorija['naziv']) ?></option>
+                  <?= 
+                  
+                    print_r($kategorija);
+                    $id = isset($kategorija['id']) ? $kategorija['id'] : (string)$kategorija['_id'];
+                    
+                   ?>
+                   <option value="<?= esc($id) ?>"><?= esc($kategorija['naziv']) ?></option>
             <?php endforeach; ?>
                 </select>
 
@@ -103,7 +109,6 @@
                 <button type="submit">Dodaj proizvod</button>
             </form>
         </section>
-
         <section id="stolovi">
             <h2>🪑 Stolovi</h2>
             <form action="/admin/add-table" method="post">

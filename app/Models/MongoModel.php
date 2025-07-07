@@ -2,14 +2,15 @@
 namespace App\Models;
 use MongoDB\Client;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\BSON\ObjectId;
 
 
 use CodeIgniter\I18n\Time;
+use PhpParser\Node\Expr\Cast\Object_;
 class MongoModel
 {
     protected $client;
     protected $korisnici;
-
     public function __construct()
     {
         $this->client = new Client("mongodb://localhost:27017");
@@ -93,11 +94,10 @@ public function getAllUsers()
 }
 public function getAllCategories()
 {
-    $cursor = $this->client->bazaprojekat->kategorije->find([], [
-        'projection' => ['_id' => 0]
-    ]);
-
-    return iterator_to_array($cursor);
+    log_message('debug', 're');
+    $cursor = $this->client->bazaprojekat->kategorija->find([], []);
+    //log_message('debug',  print_r(iterator_to_array($cursor), true));
+    return iterator_to_array( $cursor);
 }
 public function getAllOrders()
 {
@@ -215,5 +215,18 @@ public function getLogs()
 
     return iterator_to_array($logovi);
 }
-    
+    public function updateRole($username, $role_id){
+        $role = $role_id==1 ? 'admin': 'korisnik'; 
+        if($role_id==2)
+            $role='konobar';
+        log_message('debug', $username.' '.$role);
+        $this->client->bazaprojekat->korisnici->updateOne(['username'=>$username],['$set' =>['role'=>$role]]);
+    }
+    public function addCategory($ime, $opis){
+        $this->client->bazaprojekat->kategorija->insertOne(['naziv'=>$ime, 'opis'=>$opis]);
+    }
+    public function addProduct($naziv, $cena, $opis, $kategorija_id, $dostupno, $imeSlike){
+        $this->client->bazaprojekat->proizvodi->insertOne(['naziv'=>$naziv, 'cena'=>(float)$cena, 'opis'=>$opis, 'kategorija_id'=>new ObjectId($kategorija_id), 'dostupno'=> $dostupno, 'slika'=>$imeSlike]);
+    }
+
 }

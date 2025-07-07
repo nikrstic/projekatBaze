@@ -9,36 +9,36 @@ use CodeIgniter\Files\File;
 class AdminController extends BaseController
 {
     protected $helpers = ['form'];
-    protected function db()
-    {
-        return \Config\Database::connect('default');
+    protected $session;
+    protected $model;
+   public function __construct()
+{
+    $this->session = session();
+    
+    if ($this->session->get('database') === 'mysql') {
+        $this->model = new MysqlModel();
+    } elseif ($this->session->get('database') === 'mongodb') {
+        $this->model = new MongoModel();
     }
+}
+
    public function adminPage()
 {
-    $session = session();
-    if($_SESSION['database']=='mysql'){
-        $model = new MysqlModel();
-         
-    }
-    
-    if($_SESSION['database']=='mongodb'){
-        $model= new MongoModel();
-    }
-    if ($session->get('role_id') != 1 && $session->get('role')!= 'admin') {
-        log_message('debug','usli ovde'.$session->get('role'));
+   
+    if ($this->session->get('role_id') != 1 && $this->session->get('role')!= 'admin') {
+        //log_message('debug','usli ovde'.$session->get('role'));
         return redirect()->to('login-form');
     }
    
-
-    $korisnici = $model->getAllUsers();
-    log_message('debug',"aaaaaaaaaaaa");
-    log_message('debug',print_r($korisnici));
-    log_message('debug',"aaaaaaaaaaaa");
-    $kategorije = $model->getAllCategories();
-    $narudzbine = $model->getAllOrders();
-    $poruke = $model->getAllMessages();
-    $statistika = $model->getStats();
-    $logovi = $model->getLogs();
+    $korisnici = $this->model->getAllUsers();
+    // log_message('debug',"aaaaaaaaaaaa");
+    // log_message('debug',print_r($korisnici));
+    // log_message('debug',"aaaaaaaaaaaa");
+    $kategorije = $this->model->getAllCategories();
+    $narudzbine = $this->model->getAllOrders();
+    $poruke = $this->model->getAllMessages();
+    $statistika = $this->model->getStats();
+    $logovi = $this->model->getLogs();
 
     return view('admin', [
         'korisnici' => $korisnici,
@@ -47,7 +47,7 @@ class AdminController extends BaseController
         'poruke' => $poruke,
         'statistika' => $statistika,
         'logovi' => $logovi,
-        ['errors'=>[]]
+        'errors'=>[]
     ]);
 }
     public function changeRole()
@@ -55,8 +55,7 @@ class AdminController extends BaseController
     $username = $this->request->getPost('username');
     $role_id = $this->request->getPost('role_id');
 
-    $model = new MysqlModel();
-    $model->updateRole($username, $role_id);
+    $this->model->updateRole($username, $role_id);
 
     return redirect()->to('/admin#korisnici'); // osveži stranicu na delu "korisnici"
 }
@@ -64,8 +63,7 @@ public function addCategory()
 {
     $ime = $this->request->getPost('ime');
     $opis = $this->request->getPost('opis');
-    $model = new MysqlModel();
-    $model->addCategory($ime, $opis);
+    $this->model->addCategory($ime, $opis);
     return redirect()->to('/admin#kategorije');
 }
 public function addProduct(){
@@ -74,7 +72,6 @@ public function addProduct(){
     $opis = $this->request->getPost('opis');
     $kategorija_id = $this->request->getPost('kategorija_id');
     $dostupno= $this->request->getPost('dostupno');
-    $model = new MysqlModel();
     
     $img = $this->request->getFile('slika');
 
@@ -91,7 +88,7 @@ public function addProduct(){
     }
 
 
-    $model->addProduct($naziv, $cena, $opis, $kategorija_id, $dostupno, $imeSlike);
+    $this->model->addProduct($naziv, $cena, $opis, $kategorija_id, $dostupno, $imeSlike);
     return redirect()->to('/admin#proizvodi');
 }
 
@@ -99,8 +96,8 @@ public function addTable()
 {
     $oznaka = $this->request->getPost('oznaka');
     $aktivan= $this->request->getPost('aktivan');
-    $model = new MysqlModel();
-    $model->addTable($oznaka, $aktivan);
+    
+    $this->model->addTable($oznaka, $aktivan);
    
     return redirect()->to('/admin#stolovi');
 }
