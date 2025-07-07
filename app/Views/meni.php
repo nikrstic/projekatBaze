@@ -4,6 +4,7 @@
     <title>Meni - <?= esc($kategorija['naziv']) ?></title>
 </head>
 <body>
+    <?= view('partials/header') ?>
     <h1>Meni — Kategorija: <?= esc($kategorija['naziv']) ?></h1>
 
     <nav>

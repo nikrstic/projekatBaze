@@ -6,7 +6,7 @@
     <title>Pocetna</title>
 </head>
 <body>
-  
+  <?= view('partials/header') ?>
 
      <div class="main">
           <h1>Dobrodosli u sistem kafica</h1>

@@ -6,6 +6,7 @@
     <title>Document</title>
 </head>
 <body>
+    <?= view('partials/header') ?>
     <h2>🍽️ Aktuelne narudžbine</h2>
 
 <?php if (session()->getFlashdata('success')): ?>

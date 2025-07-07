@@ -6,6 +6,7 @@
     <title>Document</title>
 </head>
 <body>
+    <?= view('partials/header') ?>
     <h3>Koji sto zelite?</h3>
     
     <form method="post" action="/izabranSto" >
