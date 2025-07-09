@@ -19,6 +19,7 @@ class CartController extends BaseController{
     {
         $user_id = session()->get('user_id');
         $proizvod_id = $this->request->getPost('proizvod_id');
+        log_message('debug', 'ss'.(string)$proizvod_id);
         $this->model->addToCart($user_id, $proizvod_id);
         return redirect()->back();
     }

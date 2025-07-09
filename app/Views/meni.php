@@ -54,12 +54,13 @@
     </div>
     <div id="korpa" style="display: none;">
     <h2>🛒 Tvoja korpa</h2>
-
+            <?=$ukupna_cena=0; ?>
     <?php if (!empty($korpa)): ?>
         <table>
             <tr><th>Proizvod</th><th>Cena</th><th>Količina</th><th>Ukupno</th><th>Akcija</th></tr>
             <?php foreach ($korpa as $k): ?>
                 <tr>
+                    <?= $ukupna_cena+= $k['cena'] * $k['kolicina']?>
                     <td><?= esc($k['naziv']) ?></td>
                     <td><?= number_format($k['cena'], 2, ',', '.') ?> €</td>
                     <td><?= esc($k['kolicina']) ?></td>
@@ -67,14 +68,20 @@
                     <td>
                         <form method="post" action="/korpa/obrisi">
                             <?= csrf_field() ?>
-                            <input type="hidden" name="stavka_id" value="<?= esc($k['stavka_id']) ?>">
+                            <?= $id = isset($k['stavka_id']) ? $k['stavka_id']:(string) $k['_id']; 
+                            ?>
+                            <input type="hidden" name="stavka_id" value="<?= esc($id) ?>">
+
+                            
                             <button type="submit">🗑️</button>
                         </form>
                         
                     </td>
+                    
                 </tr>
             <?php endforeach; ?>
         </table>
+        <td><?=number_format($ukupna_cena)?></td>
         <form action="/naruci" method="post">
                             <?= csrf_field() ?>
                             <button type="submit">Naruci</button>

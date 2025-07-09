@@ -65,6 +65,7 @@ public function login($username, $password){
                 'username' => $korisnik['username'],
                 'ime' => $korisnik['ime'],
                 'role' => $korisnik['role'],
+                'user_id' =>$korisnik['_id'],
                 'isLoggedIn' => true
             ]);
         return 1;
@@ -252,8 +253,15 @@ public function getProductsByCategory($kategorija_id){
 }
 public function getCart($user_id)
 {
-    return $this->client->bazaprojekat->korpa->find(['korisnik_id'=>$user_id]);
+    $user_id ? log_message('debug', $user_id) : log_message('debug', 'null');
+    $cursor = $this->client->bazaprojekat->korpa->find([
+        'korisnik_id' => $user_id
+    ]);
+    $array =iterator_to_array($cursor);
+    return $array;
+    
 }
+
     // public function getCategory($kategorija_id)
     // {
     //     return $this->client->bazaprojekat->kategorija->findOne(['_id' => new ObjectId($kategorija_id)]);
@@ -263,7 +271,9 @@ public function getCart($user_id)
 public function addToCart($user_id, $proizvod_id)
 {
     $collection = $this->client->bazaprojekat->korpa;
-
+    $proizvod = $this->client->bazaprojekat->proizvodi->findOne(
+    ['_id' => new ObjectId($proizvod_id)],
+    ['projection' => ['_id' => 0, 'naziv' => 1, 'cena' => 1]]);    
     $postoji = $collection->findOne([
         'korisnik_id' => new ObjectId($user_id),
         'proizvod_id' => new ObjectId($proizvod_id)
@@ -279,9 +289,52 @@ public function addToCart($user_id, $proizvod_id)
             'korisnik_id' => new ObjectId($user_id),
             'proizvod_id' => new ObjectId($proizvod_id),
             'kolicina' => 1,
+            'naziv' => $proizvod['naziv'],
+            'cena' => $proizvod['cena'],
             'dodato' => new \MongoDB\BSON\UTCDateTime()
         ]);
     }
 }
+public function getStoById($sto_id){
+    $sto = $this->client->bazaprojekat->stolovi->findOne([
+        '_id' => new ObjectId($sto_id)
+    ], [
+        'projection' => [
+            '_id' => 0,
+            'oznaka' => 1
+        ]
+    ]);
+    return $sto['oznaka'];
+}
+// los naziv funkcije, ali ostavljam ovako da bi kod iz kontrolera bio jedinstven
+public function pozoviProceduruNarudzbine($korisnik_id, $sto_id){
+    
+    $korpa = iterator_to_array($this->client->bazaprojekat->korpa->find(
+    ['korisnik_id' => new ObjectId($korisnik_id)],
+    ['projection' => ['_id' => 0, 'naziv' => 1, 'proizvod_id'=>1, 'cena' => 1,'korisni_id'=>$korisnik_id, 'kolicina' =>1]]));
+    $stavke = [];
+    foreach ($korpa as $item){
+        $stavke[] = [
+        'proizvod_id' => $item['naziv'],
+        'kolicina' => (int)$item['kolicina'],
+        'naziv' => (string)$item['naziv']
+    ];
 
+    }
+    $this->client->bazaprojekat->narudzbine->insertOne([
+            'korisnik_id'=>$korisnik_id,
+            'sto_id'=>$sto_id,
+            'vreme'=> new \MongoDB\BSON\UTCDateTime(),
+            'status'=> 'na cekanju',
+            'artikli' => $stavke,
+            'sto' => $this->getStoById($sto_id)
+        ]);
+    $this->client->bazaprojekat->korpa->deleteOne(['korisnik_id'=>$korisnik_id]);
+}
+public function deleteItem($stavka_id){
+    $this->client->bazaprojekat->korpa->deleteOne(['_id'=>new ObjectId($stavka_id)]);
+}
+public function getNarudzbineSaStavkama(){
+    return iterator_to_array($this->client->bazaprojekat->narudzbine->find([]));
+}
 }

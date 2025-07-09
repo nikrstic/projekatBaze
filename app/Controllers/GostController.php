@@ -27,10 +27,11 @@ class GostController extends BaseController{
         ]);
     }
         public function prikaziProizvode($kategorija_id){
-
+        session();
         $kategorije = $this->model->getCategories();
         $proizvodi = $this->model->getProductsByCategory($kategorija_id);
         $kategorija = $this->model->getCategory($kategorija_id);
+        log_message('debug', 'sesija: '. print_r($_SESSION));
         $korpa = $this->model->getCart(session()->get('user_id'));
         $path = WRITEPATH . 'uploads/';
         return view('meni', [
