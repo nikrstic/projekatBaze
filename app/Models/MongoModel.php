@@ -90,13 +90,13 @@ public function getAllUsers()
             'role' => 1
         ]
     ]);
-    log_message('debug',print_r($cursor));
+    //log_message('debug',print_r($cursor));
     
     return iterator_to_array($cursor);
 }
 public function getCategories()
 {
-    log_message('debug', 're');
+    //log_message('debug', 're');
     $cursor = $this->client->bazaprojekat->kategorija->find([], []);
     //log_message('debug',  print_r(iterator_to_array($cursor), true));
     return iterator_to_array( $cursor);
@@ -236,7 +236,7 @@ public function getLogs()
 
     // gost
     public function getTables(){
-        return  $this->client->bazaprojekat->stolovi->find();
+        return  iterator_to_array($this->client->bazaprojekat->stolovi->find());
     }
     public function getCategory($kategorija_id)
 {
@@ -250,11 +250,11 @@ public function getLogs()
     ]);
 }
 public function getProductsByCategory($kategorija_id){
-    return $this->client->bazaprojekat->proizvodi->find(['kategorija_id'=>new ObjectID($kategorija_id)]);
+    return iterator_to_array($this->client->bazaprojekat->proizvodi->find(['kategorija_id'=>new ObjectID($kategorija_id)]));
 }
 public function getCart($user_id)
 {
-    $user_id ? log_message('debug', $user_id) : log_message('debug', 'null');
+    //$user_id ? log_message('debug', $user_id) : log_message('debug', 'null');
     $cursor = $this->client->bazaprojekat->korpa->find([
         'korisnik_id' => $user_id
     ]);

@@ -31,7 +31,7 @@ class GostController extends BaseController{
         $kategorije = $this->model->getCategories();
         $proizvodi = $this->model->getProductsByCategory($kategorija_id);
         $kategorija = $this->model->getCategory($kategorija_id);
-        log_message('debug', 'sesija: '. print_r($_SESSION));
+        //log_message('debug', 'sesija: '. print_r($_SESSION));
         $korpa = $this->model->getCart(session()->get('user_id'));
         $path = WRITEPATH . 'uploads/';
         return view('meni', [
@@ -50,7 +50,7 @@ class GostController extends BaseController{
     }
 
     public function izaberiSto(){
-        log_message('debug','izberiSto');
+        //log_message('debug','izberiSto');
         $session = session();
         $izabran = $this->request->getPost('sto_id'); 
         $session->set('sto', $izabran);
@@ -83,6 +83,6 @@ class GostController extends BaseController{
     
     $this->model->pozoviProceduruNarudzbine($korisnik_id, $sto_id);
 
-    return redirect()->to('/meni/kategorija')->with('success', 'Narudžbina uspešno napravljena preko procedure!');
+    return redirect()->to('/meni/kategorija')->with('success', 'Narudžbina uspešno napravljena!');
 }
 }
