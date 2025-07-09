@@ -1,5 +1,6 @@
 <?php
 namespace App\Models;
+use Exception;
 use MongoDB\Client;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\BSON\ObjectId;
@@ -336,5 +337,14 @@ public function deleteItem($stavka_id){
 }
 public function getNarudzbineSaStavkama(){
     return iterator_to_array($this->client->bazaprojekat->narudzbine->find([]));
+}
+
+public function azurirajStatusNarudzbine($id, $status){
+    try{
+        $this->client->bazaprojekat->narudzbine->updateOne(['_id'=>new ObjectId($id)],['$set'=>['status'=>$status]]);
+    }
+    catch(Exception $e){
+        log_message('debug', $e);
+    }
 }
 }
