@@ -103,35 +103,40 @@ public function getCategories()
 }
 public function getAllOrders()
 {
-    $narudzbine = $this->client->bazaprojekat->narudzbine->aggregate([
-        [
-            '$lookup' => [
-                'from' => 'korisnici',
-                'localField' => 'korisnik_id',
-                'foreignField' => '_id',
-                'as' => 'korisnik'
-            ]
-        ],
-        [
-            '$lookup' => [
-                'from' => 'stolovi',
-                'localField' => 'sto_id',
-                'foreignField' => '_id',
-                'as' => 'sto'
-            ]
-        ],
-        ['$unwind' => '$korisnik'],
-        ['$unwind' => '$sto'],
-        ['$sort' => ['vreme' => -1]],
-        ['$project' => [
-            '_id' => 0,
-            'id' => ['$toString' => '$_id'],
-            'vreme' => 1,
-            'status' => 1,
-            'username' => '$korisnik.username',
-            'sto' => '$sto.oznaka'
-        ]]
-    ]);
+   $narudzbine = $this->client->bazaprojekat->narudzbine->aggregate([
+    [
+        '$addFields' => [
+            'sto_obj_id' => [ '$toObjectId' => '$sto_id' ]
+        ]
+    ],
+    [
+        '$lookup' => [
+            'from' => 'korisnici',
+            'localField' => 'korisnik_id',
+            'foreignField' => '_id',
+            'as' => 'korisnik'
+        ]
+    ],
+    [
+        '$lookup' => [
+            'from' => 'stolovi',
+            'localField' => 'sto_obj_id', 
+            'foreignField' => '_id',
+            'as' => 'sto'
+        ]
+    ],
+    [ '$unwind' => '$korisnik' ],
+    [ '$unwind' => '$sto' ],
+    [ '$sort' => [ 'vreme' => -1 ] ],
+    [ '$project' => [
+        '_id' => 0,
+        'id' => [ '$toString' => '$_id' ],
+        'vreme' => 1,
+        'status' => 1,
+        'username' => '$korisnik.username',
+        'sto' => '$sto.oznaka'
+    ]]
+]);
 
     return iterator_to_array($narudzbine);
 }
@@ -172,24 +177,42 @@ public function getAllMessages()
 }
 public function getStats()
 {
-    $statistika = $this->client->bazaprojekat->ukupna_potrosnja->aggregate([
-        [
-            '$lookup' => [
-                'from' => 'korisnici',
-                'localField' => 'korisnik_id',
-                'foreignField' => '_id',
-                'as' => 'korisnik'
-            ]
-        ],
-        ['$unwind' => '$korisnik'],
-        ['$sort' => ['iznos' => -1]],
-        ['$limit' => 5],
-        ['$project' => [
+    $statistika = $this->client->bazaprojekat->narudzbine->aggregate([
+    [
+        '$unwind' => '$artikli'
+    ],
+    [
+        '$group' => [
+            '_id' => '$korisnik_id',
+            'ukupan_iznos' => [ '$sum' => [ '$multiply' => ['$artikli.cena', '$artikli.kolicina'] ] ]
+        ]
+    ],
+    [
+        '$addFields' => [
+            'korisnik_obj_id' => [ '$toObjectId' => '$_id' ]
+        ]
+    ],
+    [
+        '$lookup' => [
+            'from' => 'korisnici',
+            'localField' => 'korisnik_obj_id',
+            'foreignField' => '_id',
+            'as' => 'korisnik'
+        ]
+    ],
+    [ '$unwind' => '$korisnik' ],
+    [ '$sort' => [ 'ukupan_iznos' => -1 ] ],
+    [ '$limit' => 5 ],
+    [
+        '$project' => [
             '_id' => 0,
             'username' => '$korisnik.username',
-            'iznos' => 1
-        ]]
-    ]);
+            'iznos' => '$ukupan_iznos'
+        ]
+    ]
+]);
+
+
 
     return iterator_to_array($statistika);
 }
@@ -318,7 +341,8 @@ public function pozoviProceduruNarudzbine($korisnik_id, $sto_id){
         $stavke[] = [
         'proizvod_id' => $item['naziv'],
         'kolicina' => (int)$item['kolicina'],
-        'naziv' => (string)$item['naziv']
+        'naziv' => (string)$item['naziv'],
+        'cena' => (float)$item['cena']
     ];
 
     }
@@ -331,6 +355,13 @@ public function pozoviProceduruNarudzbine($korisnik_id, $sto_id){
             'sto' => $this->getStoById($sto_id)
         ]);
     $this->client->bazaprojekat->korpa->deleteOne(['korisnik_id'=>$korisnik_id]);
+    
+    $this->client->bazaprojekat->logovi->insertOne([
+        'korisnik_id' => new ObjectId($korisnik_id),
+        'radnja' => 'Nova narudžbina ',
+        'vreme' => new UTCDateTime()
+    ]);
+
 }
 public function deleteItem($stavka_id){
     $this->client->bazaprojekat->korpa->deleteOne(['_id'=>new ObjectId($stavka_id)]);
