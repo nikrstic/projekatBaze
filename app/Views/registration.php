@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Registracija</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="<?= base_url('js/Validator.js') ?>"></script>
     <style>
         .registration-card {
             max-width: 600px;
@@ -37,7 +38,7 @@
                     <p class="text-muted">Popunite formu za kreiranje naloga</p>
                 </div>
 
-                <form action="/registration" method="post">
+                <form id="registration" action="/registration" method="post">
                     <?= csrf_field() ?>
                     
                     <div class="row g-3">
@@ -108,5 +109,23 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    const config = {
+        username: { required: true, minlength: 3, maxlength: 50 },
+        email: { required: true, email: true },
+        password: { required: true, minlength: 3, maxlength: 20, matching: 'repassword' },
+        repassword: { required: true, minlength: 3, maxlength: 20 }
+    };
+
+    const formValidator = new Validator(config, '#registration');
+
+    document.querySelector('#registration').addEventListener('submit', function (e) {
+        if (!formValidator.validationPassed()) {
+            e.preventDefault();
+        }
+    });
+
+</script>
+
 </body>
 </html>

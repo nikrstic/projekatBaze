@@ -31,7 +31,7 @@ class RegistrationController extends BaseController{
             }
             return redirect()->to('/login-form');
         }
-        echo 'Vrednost: ' . $session->get('database') . '<br>';
+        //echo 'Vrednost: ' . $session->get('database') . '<br>';
         return view('registration');
     }
 }
