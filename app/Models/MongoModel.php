@@ -94,6 +94,29 @@ public function getAllUsers()
     
     return iterator_to_array($cursor);
 }
+public function seedDefaultUser()
+{
+    $count = $this->korisnici->countDocuments();
+
+    if ($count === 0) {
+        $this->korisnici->insertOne([
+            'username' => 'admin1',
+            'ime' => 'Marko',
+            'prezime' => 'Marković',
+            'email' => 'marko@example.com',
+            'password' => 'lozinka',
+            'contact' => '060123123',
+            'pol' => 1,
+            'role' => 'admin',
+            'created_at' => new UTCDateTime()
+        ]);
+
+        log_message('debug', 'Default admin korisnik je ubačen.');
+    } else {
+        log_message('debug', 'Korisnici već postoje — seed nije potreban.');
+    }
+}
+
 public function getCategories()
 {
     //log_message('debug', 're');

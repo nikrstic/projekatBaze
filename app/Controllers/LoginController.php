@@ -46,7 +46,7 @@ public function login()
         if($_SESSION['database']=='mongodb'){
             
             $model = new MongoModel();
-           
+            $model->seedDefaultUser();
             $login = $model->login($username, $password);
             //log_message('debug', print_r(session()->get(), true));
             //log_message('debug', $_SESSION['username']);

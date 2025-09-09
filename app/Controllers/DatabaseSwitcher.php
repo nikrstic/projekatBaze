@@ -37,6 +37,7 @@ class DatabaseSwitcher extends BaseController
 public function loadMongo(){
     $session=session();
     $session->set('database', 'mongodb');
+    
     return redirect()->to('/login-form');
 }
 
